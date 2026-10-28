@@ -1,4 +1,4 @@
-# astrbot-gemini-search
+# astrbot_plugin_gemini_search
 
 AstrBot 插件。聊天模型要查资料时，交给另一个自带联网搜索的模型（比如 Gemini 的 Google 搜索）去搜，再把结论交回来。聊天模型不用换，用来顶替 AstrBot 自带的网页搜索工具。
 
@@ -35,9 +35,15 @@ AstrBot 插件。聊天模型要查资料时，交给另一个自带联网搜索
 
 ## 安装
 
-把 `main.py`、`metadata.yaml`、`_conf_schema.json` 打成 zip（文件放在压缩包根目录），在 AstrBot 面板的插件页从文件安装，装完在插件设置里选好搜索用的模型。
+在 AstrBot 面板的插件页选择从链接安装，填仓库地址 `https://github.com/ShirahaTobisa/astrbot_plugin_gemini_search`；装完在插件设置里选好搜索用的模型。
+
+也可以把 `main.py`、`metadata.yaml`、`_conf_schema.json` 打成 zip（文件放在压缩包根目录），从文件安装。
 
 ## 已知限制
 
 - 拿不到来源链接：转成 OpenAI 格式后，上游一般不返回搜索来源，只能靠模型在回答里写出网站名。
 - 每次搜索都要多调一次模型，会多等几秒。
+
+## 许可证
+
+CC BY-NC 4.0，详见 `LICENSE`。

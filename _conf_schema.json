@@ -1,0 +1,6 @@
+{
+  "provider_id": {"description": "用来联网搜索的模型（按 OpenAI 兼容类型添加，上游要认 web_search_options）", "type": "string", "_special": "select_provider", "default": ""},
+  "replace_builtin_search": {"description": "停用 AstrBot 自带的网页搜索工具（读网页的工具保留）", "type": "bool", "default": true},
+  "timeout": {"description": "单次搜索最长等待秒数", "type": "int", "default": 60},
+  "reasoning_effort": {"description": "搜索模型的思考档位，越低越快；留空按模型默认", "type": "string", "options": ["", "low", "medium", "high"], "default": "low"}
+}

@@ -1,0 +1,40 @@
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local settings and secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.local
+
+# Editors and temporary files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.tmp
+*.log
+.cache/
+
+# Common generated dependencies and build output
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage/
+htmlcov/
+/build/
+/dist/
+/target/
+/tmp/
+
+# Add project-specific patterns as needed.
+# assets/ and release/ stay visible to Git by default.

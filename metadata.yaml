@@ -1,0 +1,6 @@
+name: astrbot_plugin_gemini_search
+display_name: 联网搜索（模型自带）
+desc: 聊天模型要查资料时，交给另一个自带联网搜索的模型（如 Gemini 的 Google 搜索）去搜，顶替 AstrBot 自带的网页搜索工具。
+version: v0.1.0
+author: Mornye
+astrbot_version: ">=4.26.0,<5"

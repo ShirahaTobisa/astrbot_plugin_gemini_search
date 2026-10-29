@@ -47,10 +47,10 @@ class GeminiSearchPlugin(Star):
 
     @filter.llm_tool(name="online_search")
     async def online_search(self, event: AstrMessageEvent, query: str):
-        """联网搜索。遇到下面这些情况先搜再答，不要装作知道，也不要只回一句没印象：需要实时信息，比如新闻、天气、比赛结果、游戏活动和版本更新、价格；拿不准的事实；不认识的人名、角色、作品、游戏内容、梗和新词。常识和本来就清楚的内容不用搜。
+        """联网搜索。遇到下面这些情况先搜再答，不要装作知道，也不要只说没印象或反问对方：需要实时信息，比如新闻、天气、比赛结果、游戏活动和版本更新、价格；拿不准的事实；对方提到你不认识的人名、角色、作品、游戏内容、梗和新词，哪怕只给了一个名字，也先拿它去搜。常识和本来就清楚的内容不用搜。
 
         Args:
-            query(string): 要查的问题，用一句完整的话写清楚要找什么，带上时间、地点、作品名等必要信息。
+            query(string): 要查的问题，用一句完整的话写清楚要找什么，带上时间、地点、作品名等必要信息；只知道一个名字时，就用这个名字加上对方问的事去搜。
         """
         provider = self.context.get_provider_by_id(self.provider_id)
         client = getattr(provider, "client", None)

@@ -23,6 +23,10 @@ SEARCH_PROMPT = (
     "先联网搜索，再只根据搜到的内容用中文简要作答：只写回答问题需要的要点，写清日期、数字、名称等关键信息，最后一句说明信息来自哪些网站。"
     "搜不到、信息过时或说法不一致时直接说明，不要编造。"
 )
+SEARCH_REMINDER = (
+    "\n\n对方提到你不认识的人名、角色、作品或新词时，先调用 online_search 查清楚再回答，不要直接说没印象或反问；"
+    "问到人物时，把这个人和你的关系一起查。查到的和你自己有关时，按你的身份自然地说出来。"
+)
 
 
 class GeminiSearchPlugin(Star):
@@ -32,6 +36,7 @@ class GeminiSearchPlugin(Star):
         self.replace_builtin = bool(config.get("replace_builtin_search", True))
         self.timeout = float(config.get("timeout", 60))
         self.reasoning_effort = str(config.get("reasoning_effort", "low")).strip()
+        self.remind = bool(config.get("remind_in_prompt", True))
 
     async def initialize(self):
         # 当前 AstrBot 从注释生成参数，但未填写 required。
@@ -39,18 +44,23 @@ class GeminiSearchPlugin(Star):
         if tool:
             tool.parameters["required"] = ["query"]
 
-    @filter.on_llm_request()
-    async def drop_builtin_search(self, event: AstrMessageEvent, req):
-        if self.replace_builtin and req.func_tool:
+    # 优先级调高一点，让提醒排在多数插件追加的提示词前面
+    @filter.on_llm_request(priority=120)
+    async def prepare_search(self, event: AstrMessageEvent, req):
+        if not req.func_tool:
+            return
+        if self.replace_builtin:
             for name in BUILTIN_SEARCH_TOOLS:
                 req.func_tool.remove_tool(name)
+        if self.remind and req.func_tool.get_tool("online_search"):
+            req.system_prompt += SEARCH_REMINDER
 
     @filter.llm_tool(name="online_search")
     async def online_search(self, event: AstrMessageEvent, query: str):
-        """联网搜索。遇到下面这些情况先搜再答，不要装作知道，也不要只说没印象或反问对方：需要实时信息，比如新闻、天气、比赛结果、游戏活动和版本更新、价格；拿不准的事实；对方提到你不认识的人名、角色、作品、游戏内容、梗和新词，哪怕只给了一个名字，也先拿它去搜。常识和本来就清楚的内容不用搜。
+        """联网搜索。遇到下面这些情况先搜再答，不要装作知道，也不要只说没印象或反问对方：需要实时信息，比如新闻、天气、比赛结果、游戏活动和版本更新、价格；拿不准的事实；对方提到你不认识的人名、角色、作品、游戏内容、梗和新词，哪怕只给了一个名字，也先拿它去搜。常识和本来就清楚的内容不用搜。搜索结果里没写到的细节不要自己补，拿不准就换个问法再搜一次。
 
         Args:
-            query(string): 要查的问题，用一句完整的话写清楚要找什么，带上时间、地点、作品名等必要信息；只知道一个名字时，就用这个名字加上对方问的事去搜。
+            query(string): 要查的问题，用一句完整的话写清楚要找什么，带上对方问的具体内容和时间、地点、作品名等信息；如果你在扮演某个角色，问到别的人物时，把这个人和你这个角色的关系一起问。
         """
         provider = self.context.get_provider_by_id(self.provider_id)
         client = getattr(provider, "client", None)
